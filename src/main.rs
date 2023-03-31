@@ -31,12 +31,17 @@ fn read_and_write_types() {
                     for (field, value) in value.as_object().unwrap() {
                         let types = generate_rust_fhir_type(field, value);
                         println!("{}", types);
+
+                        let mut file = File::create(format!("./fhir-types/{}.rs", resource_type))
+                            .expect("msg");
+                        file.write_all(types.as_bytes());
                     }
                 } else {
+                    println!("unable to create type for {}", field);
                 }
             }
         } else {
-            println!("not found");
+            println!("irrelevant key: {}", key.0);
         }
         counter += 1;
     }
@@ -44,9 +49,8 @@ fn read_and_write_types() {
 
 fn generate_rust_fhir_type(resource_type: &str, definition: &Value) -> String {
     let mut fhir_type = String::new();
-    fhir_type.push_str("use serde::{Deserialize, Serialize};\n");
-    fhir_type.push_str("#[derive(Serialize, Deserialize, Debug)]\n");
-    fhir_type.push_str(&format!("pub struct {} {{", resource_type));
+    fhir_type.push_str("#[derive(Serialize, Deserialize, Debug, Clone)]\n");
+    fhir_type.push_str(&format!("pub struct {} {{", { resource_type }));
     fhir_type.push_str("\n}\n");
     fhir_type
 }
