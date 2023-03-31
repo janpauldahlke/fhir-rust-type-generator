@@ -32,8 +32,8 @@ fn read_and_write_types() {
                         let types = generate_rust_fhir_type(field, value);
                         println!("{}", types);
 
-                        let mut file = File::create(format!("./fhir-types/{}.rs", resource_type))
-                            .expect("msg");
+                        let mut file =
+                            File::create(format!("./fhir-types/{}.rs", field)).expect("msg");
                         file.write_all(types.as_bytes());
                     }
                 } else {
